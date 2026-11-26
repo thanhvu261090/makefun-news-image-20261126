@@ -38,7 +38,7 @@ def font(path, size):
     return ImageFont.truetype(path, size)
 
 
-def fit_text(draw, text, fnt, width):
+def wrap(draw, text, fnt, width):
     """Greedy wrap of text to the given pixel width."""
     lines, cur = [], ""
     for word in text.split():
@@ -53,9 +53,9 @@ def fit_text(draw, text, fnt, width):
     return lines
 
 
-def block(draw, x, y, width, text, fnt, leading, fill=INK):
+def para(draw, x, y, width, text, fnt, leading, fill=INK):
     """Draw a wrapped paragraph; return the y just below it."""
-    for line in fit_text(draw, text, fnt, width):
+    for line in wrap(draw, text, fnt, width):
         draw.text((x, y), line, font=fnt, fill=fill)
         y += leading
     return y
@@ -71,11 +71,9 @@ def centred(draw, y, text, fnt, fill=INK):
     return y + fnt.size + 4
 
 
-def headline(draw, x, y, width, text, fnt, leading):
-    for line in fit_text(draw, text, fnt, width):
-        draw.text((x, y), line, font=fnt, fill=INK)
-        y += leading
-    return y
+def image_summary(img):
+    """Return a short report on the finished front page."""
+    return f"{img.size[0]}x{img.size[1]} {img.mode}"
 
 
 def tariff_bars(draw, x, y, width):
@@ -85,7 +83,6 @@ def tariff_bars(draw, x, y, width):
             ("CHINA — AS PROPOSED", 40, INK)]
     lab = font(SANS_B, 13)
     val = font(SANS_B, 15)
-    top = y
     for label, pct, colour in rows:
         draw.text((x, y), label, font=lab, fill=GREY)
         bar_x = x
@@ -129,15 +126,15 @@ def main():
     kick = font(SANS_B, 15)
     d.text((M, y), "TRADE  —  THE LEAD STORY", font=kick, fill=RED)
     y += 24
-    y = headline(d, M, y, R - M, "AMERICA'S NEW TARIFF WALL",
-                 font(SERIF_B, 52), 58)
+    y = para(d, M, y, R - M, "AMERICA'S NEW TARIFF WALL",
+             font(SERIF_B, 52), 58)
     y += 4
-    y = block(d, M, y, R - M,
-              "Washington unveils a sweeping new tariff plan: duties of up to "
-              "25% on Indian goods — cut to 17% if a trade deal is struck — "
-              "and as high as 40% on China, redrawing the map of world trade "
-              "in a single morning.",
-              font(SERIF, 19), 26)
+    y = para(d, M, y, R - M,
+             "Washington unveils a sweeping new tariff plan: duties of up to "
+             "25% on Indian goods — cut to 17% if a trade deal is struck — "
+             "and as high as 40% on China, redrawing the map of world trade "
+             "in a single morning.",
+             font(SERIF, 19), 26)
     y += 12
     y = tariff_bars(d, M, y, R - M)
     y += 6
@@ -146,21 +143,20 @@ def main():
 
     # --- two middle stories ----------------------------------------------
     col_w = (R - M - 28) // 2
-    y_mid = y
     d.text((M, y), "BEIJING'S SHANGHAI SHOCK", font=font(SANS_B, 17), fill=INK)
     d.text((M + col_w + 28, y), "THE HUMAN TOLL, COUNTED",
            font=font(SANS_B, 17), fill=INK)
     y += 26
-    y1 = block(d, M, y, col_w,
-               "China opens a graft investigation into Chen Jining, the "
-               "Politburo member who runs Shanghai — a probe that upends the "
-               "usual path to the top of Chinese power.",
-               font(SERIF, 16), 22)
-    y2 = block(d, M + col_w + 28, y, col_w,
-               "Russia's own figures show it has lost nearly 500,000 people "
-               "in the war in Ukraine — the starkest official toll yet of a "
-               "war now deep into its fifth year.",
-               font(SERIF, 16), 22)
+    y1 = para(d, M, y, col_w,
+              "China opens a graft investigation into Chen Jining, the "
+              "Politburo member who runs Shanghai — a probe that upends the "
+              "usual path to the top of Chinese power.",
+              font(SERIF, 16), 22)
+    y2 = para(d, M + col_w + 28, y, col_w,
+              "Russia's own figures show it has lost nearly 500,000 people "
+              "in the war in Ukraine — the starkest official toll yet of a "
+              "war now deep into its fifth year.",
+              font(SERIF, 16), 22)
     y = max(y1, y2) + 12
     rule(d, M, R, y, 1)
     y += 14
@@ -185,7 +181,7 @@ def main():
     for i, (head, colour, text) in enumerate(shorts):
         x = M + i * (box_w + 24)
         d.text((x, y), head, font=font(SANS_B, 15), fill=colour)
-        tops.append(block(d, x, y + 24, box_w, text, font(SERIF, 14), 19))
+        tops.append(para(d, x, y + 24, box_w, text, font(SERIF, 14), 19))
     y = max(tops) + 12
     rule(d, M, R, y, 1)
     y += 12
@@ -203,7 +199,7 @@ def main():
         "India marks Constitution Day; Gukesh plays for the World Chess crown.",
     ]
     for b in briefs:
-        y = block(d, M + 16, y, R - M - 16, "•  " + b, font(SERIF, 14), 19)
+        y = para(d, M + 16, y, R - M - 16, "•  " + b, font(SERIF, 14), 19)
         y += 2
     y += 4
     rule(d, M, R, y, 1, fill=FAINT)
@@ -214,7 +210,7 @@ def main():
     centred(d, y, note, foot, fill=GREY)
 
     img.save(OUT, "PNG", optimize=True)
-    print("wrote", OUT, img.size)
+    print("wrote", OUT, image_summary(img))
     if OUT_DIR != HERE:
         try:
             img.save(os.path.join(HERE, "entry.png"), "PNG", optimize=True)

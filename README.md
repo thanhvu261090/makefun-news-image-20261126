@@ -31,6 +31,15 @@ A one-page newspaper front page summing up the world news of
   Islands in a single day; India marks Constitution Day; Gukesh plays
   for the World Chess crown.
 
+## How the page is laid out
+
+Masthead first, then the lead story with its tariff bar chart, two
+middle stories side by side, three short stories in columns, and a
+briefs column at the foot — the shape of a real broadsheet front page,
+squeezed onto one square image. Every headline and figure on the page
+is a real story from 26 November 2026, checked against the day's
+reporting before the page was drawn.
+
 ## Run it
 
 ```sh

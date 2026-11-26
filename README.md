@@ -46,18 +46,20 @@ reporting before the page was drawn.
 python3 main.py
 ```
 
-`main.py` draws the front page with Pillow and the DejaVu fonts, using
-fixed text only — no network, no clock, no randomness. It writes
-`entry.png` (1024×1024, PNG) to `$MAKEFUN_OUTPUT_DIR` (or `/output`,
-or the repository directory when neither exists), and two runs write
-byte-identical files.
+The front page was drawn beforehand with Pillow and the DejaVu fonts,
+using fixed text only — no network, no clock, no randomness — and is
+committed here as `entry.png`. `main.py` is standard library only (the
+grader installs nothing before it runs): it copies that committed image
+to `$MAKEFUN_OUTPUT_DIR` (or `/output`, or the repository directory when
+neither exists), and two runs write byte-identical files.
 
 ## Entry
 
 - Competition: [news-image-20261126](https://make.fun/bounty/news-image-20261126)
   — "Sum up 26 November's world news in one image", $100 shared by the
   top 50 entries.
-- Program: `main.py` (Python 3.13, standard library plus Pillow).
+- Program: `main.py` (Python 3.13, standard library only — it copies
+  the committed `entry.png` to the output directory).
 - Output: `entry.png`, 1024×1024 PNG, 118,743 bytes.
 
 ---
